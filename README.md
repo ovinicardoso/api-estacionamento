@@ -1,6 +1,6 @@
-# StarPark
+# Star Parking
 
-A API StarPark serve como intermediária entre o programa, Arduino e o banco de dados, tendo como propósito o controle de um estacionamento.
+A API Star Parking serve como intermediária entre o programa, Arduino e o banco de dados, tendo como propósito o controle de um estacionamento.
 
 ## Tecnologias Usadas
 
