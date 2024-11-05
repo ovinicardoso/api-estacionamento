@@ -8,6 +8,10 @@ require_once '../../models/Vaga.php';
 $database = new Database();
 $db = $database->getConnection();
 
+if (!$db) {
+    die(json_encode(array("message" => "Erro ao conectar ao banco de dados.")));
+}
+
 $vaga = new Vaga($db);
 
 // Obter o método HTTP da requisição
@@ -35,6 +39,7 @@ switch ($method) {
                 array_push($vagas_arr["vagas"], $vaga_item);
             }
 
+            // Exibe as vagas em formato JSON
             echo json_encode($vagas_arr);
         } else {
             echo json_encode(array("message" => "Nenhuma vaga encontrada."));

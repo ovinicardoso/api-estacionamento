@@ -19,12 +19,28 @@ switch ($method) {
             $movimentacao->read();
             echo json_encode($movimentacao);
         } else {
-            // Lê todas as movimentações
-            $stmt = $movimentacao->readAll();
+            // Lê todas as movimentações, incluindo o nome do cartão
+            $query = "
+                SELECT 
+                    m.ID_Movimentacao, 
+                    m.Hora_Entrada, 
+                    m.Hora_Saida, 
+                    c.Nome_Cartao, 
+                    v.ID_Vaga 
+                FROM 
+                    Movimentacao m 
+                JOIN 
+                    Cartao c ON m.ID_Cartao = c.ID_Cartao 
+                JOIN 
+                    Vaga v ON m.ID_Vaga = v.ID_Vaga";
+    
+            $stmt = $conn->prepare($query);
+            $stmt->execute();
             $movimentacoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
             echo json_encode($movimentacoes);
         }
         break;
+    
 
     case 'POST':
         // Cria uma nova movimentação
