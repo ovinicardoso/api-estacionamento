@@ -19,19 +19,19 @@ switch ($method) {
             $movimentacao->read();
             echo json_encode($movimentacao);
         } else {
-            // Lê todas as movimentações, incluindo o nome do cartão
+            // Lê todas as movimentações, incluindo o nome do cartão e nome da vaga
             $query = "
                 SELECT 
                     m.ID_Movimentacao, 
                     m.Hora_Entrada, 
                     m.Hora_Saida, 
                     c.Nome_Cartao, 
-                    v.ID_Vaga 
+                    v.Nome_Vaga  -- Altere aqui para pegar o Nome da Vaga
                 FROM 
                     Movimentacao m 
-                JOIN 
+                LEFT JOIN 
                     Cartao c ON m.ID_Cartao = c.ID_Cartao 
-                JOIN 
+                LEFT JOIN 
                     Vaga v ON m.ID_Vaga = v.ID_Vaga";
     
             $stmt = $conn->prepare($query);
@@ -41,7 +41,6 @@ switch ($method) {
         }
         break;
     
-
     case 'POST':
         // Cria uma nova movimentação
         $data = json_decode(file_get_contents("php://input"));
@@ -65,7 +64,7 @@ switch ($method) {
         $movimentacao->hora_saida = $data->hora_saida;
         $movimentacao->id_cartao = $data->id_cartao;
         $movimentacao->id_vaga = $data->id_vaga;
-
+        
         if ($movimentacao->update()) {
             echo json_encode(["message" => "Movimentação atualizada com sucesso."]);
         } else {
