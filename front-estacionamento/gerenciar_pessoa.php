@@ -79,7 +79,7 @@ $sql = "SELECT ID_Pessoa, Nome_Pessoa, Telefone, Email FROM Pessoa";
 $result = $conn->query($sql);
 
 // Selecionar cartões disponíveis
-$sql_cartoes = "SELECT ID_Cartao, NS_Cartao FROM Cartao WHERE ID_Pessoa IS NULL";
+$sql_cartoes = "SELECT ID_Cartao, NS_Cartao FROM Cartao";
 $result_cartoes = $conn->query($sql_cartoes);
 ?>
 

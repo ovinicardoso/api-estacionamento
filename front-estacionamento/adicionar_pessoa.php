@@ -1,45 +1,66 @@
 <?php
+
 include('controle_estacionamento.php');
 
-$conn = new mysqli($servername, $username, $password, $dbname);
+// Variáveis para armazenar mensagens
+$mensagem = "";
+$error_message = "";
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $nome_usuario = $_POST['nome_usuario'];
+    $telefone = $_POST['telefone'];
+    $email = $_POST['email'];
+    $id_cartao = $_POST['id_cartao'];
+
+    if (empty($nome_usuario) || empty($telefone)) {
+        $error_message = "Erro: Nome e Telefone são obrigatórios.";
+    } else {
+        $dados = array(
+            'Nome_Pessoa' => $nome_usuario,
+            'Telefone' => $telefone,
+            'Email' => $email,
+            'ID_Cartao' => $id_cartao // Enviar o ID do Cartão
+        );
+
+        // URL da API
+        $url_api = "http://localhost/api-estacionamento/api/pessoas/index.php";
+        $ch = curl_init($url_api);
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dados));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            'Content-Type: application/json'
+        ));
+
+        $resposta = curl_exec($ch);
+
+        if (curl_errno($ch)) {
+            echo 'Erro cURL: ' . curl_error($ch);
+            curl_close($ch);
+            exit;
+        }
+
+        $status_code = curl_getinfo($ch, CURLINFO_HTTP_CODE); // Código de status da resposta da API
+        curl_close($ch);
+
+        if ($status_code == 200) {
+            $resposta_json = json_decode($resposta);
+            $mensagem = $resposta_json->message;
+        } else {
+            $resposta_json = json_decode($resposta);
+            $error_message = isset($resposta_json->message) ? $resposta_json->message : "Erro desconhecido.";
+        }
+    }
+}
+
+$conn = new mysqli($servername, $username, $password, $dbname);
 if ($conn->connect_error) {
     die("Conexão falhou: " . $conn->connect_error);
 }
 
-$mensagem = ""; // Variável para a mensagem de confirmação
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nome_usuario = $_POST['Nome_Usuario'];
-    $telefone = $_POST['Telefone'];
-    $email = $_POST['Email'];
-    $id_cartao = $_POST['ID_Cartao']; // ID do cartão selecionado
-
-    // Inserir a nova pessoa
-    $sql_pessoa = $conn->prepare("INSERT INTO pessoa (Nome_Pessoa, Telefone, Email) VALUES (?, ?, ?)");
-    $sql_pessoa->bind_param("sss", $nome_usuario, $telefone, $email);
-
-    if ($sql_pessoa->execute()) {
-        $id_pessoa = $conn->insert_id;
-
-        // Atualizar o cartão para associá-lo à nova pessoa
-        $sql_atualizar_cartao = $conn->prepare("UPDATE Cartao SET ID_Pessoa = ? WHERE ID_Cartao = ?");
-        $sql_atualizar_cartao->bind_param("ii", $id_pessoa, $id_cartao);
-        $sql_atualizar_cartao->execute();
-
-        $sql_atualizar_cartao->close();
-
-        // Mensagem de sucesso
-        $mensagem = "Pessoa adicionada com sucesso!";
-    } else {
-        $mensagem = "Erro ao adicionar pessoa.";
-    }
-
-    $sql_pessoa->close();
-}
-
-$sql_cartao = $conn->query("SELECT * FROM Cartao WHERE ID_Pessoa IS NULL"); // Selecionar cartões disponíveis
-
+// Verificar cartões não associados a nenhuma pessoa
+$sql_cartao = $conn->query("SELECT * FROM Cartao WHERE ID_Cartao NOT IN (SELECT ID_Cartao FROM Pessoa WHERE ID_Cartao IS NOT NULL)");
 $conn->close();
 ?>
 
@@ -103,11 +124,17 @@ $conn->close();
             margin-top: 20px;
             padding: 10px;
             color: green;
-            /* Cor da mensagem de sucesso */
             background-color: #e8f8e8;
-            /* Fundo verde claro */
             border: 1px solid #d4eed4;
-            /* Borda verde clara */
+            border-radius: 4px;
+        }
+
+        .error-message {
+            margin-top: 20px;
+            padding: 10px;
+            color: red;
+            background-color: #f8e8e8;
+            border: 1px solid #eed4d4;
             border-radius: 4px;
         }
     </style>
@@ -132,6 +159,8 @@ $conn->close();
             <h1>Adicionar Nova Pessoa</h1>
             <?php if ($mensagem): ?>
                 <div class="mensagem"><?php echo $mensagem; ?></div>
+            <?php elseif ($error_message): ?>
+                <div class="error-message"><?php echo $error_message; ?></div>
             <?php endif; ?>
             <form method="POST">
                 <label>Nome:</label>
