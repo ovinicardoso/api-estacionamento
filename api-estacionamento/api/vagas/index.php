@@ -39,7 +39,6 @@ switch ($method) {
                 array_push($vagas_arr["vagas"], $vaga_item);
             }
 
-            // Exibe as vagas em formato JSON
             echo json_encode($vagas_arr);
         } else {
             echo json_encode(array("message" => "Nenhuma vaga encontrada."));
@@ -65,22 +64,36 @@ switch ($method) {
         break;
 
     case 'PUT':
-        // Atualizar o status de uma vaga existente
+        // Atualizar o nome ou status de uma vaga existente
         $data = json_decode(file_get_contents("php://input"));
 
-        if (!empty($data->ID_Vaga) && isset($data->Ocupado)) {
+        if (!empty($data->ID_Vaga)) {
             $vaga->ID_Vaga = $data->ID_Vaga;
-            $vaga->Ocupado = $data->Ocupado;
 
-            if ($vaga->atualizarStatus($vaga->ID_Vaga, $vaga->Ocupado)) {
-                echo json_encode(array("message" => "Status da vaga atualizado."));
-            } else {
-                echo json_encode(array("message" => "Falha ao atualizar o status."));
+            // Verifica se o nome foi enviado e atualiza
+            if (isset($data->Nome_Vaga)) {
+                $vaga->Nome_Vaga = $data->Nome_Vaga;
+                if ($vaga->atualizarNome($vaga->ID_Vaga, $vaga->Nome_Vaga)) {
+                    echo json_encode(array("message" => "Nome da vaga atualizado."));
+                } else {
+                    echo json_encode(array("message" => "Falha ao atualizar o nome."));
+                }
+            }
+
+            // Verifica se o status foi enviado e atualiza
+            if (isset($data->Ocupado)) {
+                $vaga->Ocupado = $data->Ocupado;
+                if ($vaga->atualizarStatus($vaga->ID_Vaga, $vaga->Ocupado)) {
+                    echo json_encode(array("message" => "Status da vaga atualizado."));
+                } else {
+                    echo json_encode(array("message" => "Falha ao atualizar o status."));
+                }
             }
         } else {
             echo json_encode(array("message" => "Dados incompletos."));
         }
         break;
+
 
     case 'DELETE':
         // Deletar uma vaga existente

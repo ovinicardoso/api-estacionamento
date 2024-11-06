@@ -55,6 +55,22 @@ class Vaga
         return false;
     }
 
+    // Método para atualizar o nome de uma vaga
+    public function atualizarNome($ID_Vaga, $Nome_Vaga)
+    {
+        $query = "UPDATE " . $this->table_name . " SET Nome_Vaga = :Nome_Vaga WHERE ID_Vaga = :ID_Vaga";
+        $stmt = $this->conn->prepare($query);
+
+        $stmt->bindParam(':Nome_Vaga', $Nome_Vaga);
+        $stmt->bindParam(':ID_Vaga', $ID_Vaga);
+
+        if ($stmt->execute()) {
+            return true;
+        }
+
+        return false;
+    }
+
     // Método para deletar uma vaga
     public function deletar()
     {
