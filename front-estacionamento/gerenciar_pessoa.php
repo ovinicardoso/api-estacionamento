@@ -89,7 +89,7 @@ $result_cartoes = $conn->query($sql_cartoes);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StarPark - Gerenciar Pessoas</title>
+    <title>Gerenciar Pessoas - Star Parkin</title>
     <link rel="stylesheet" href="sidebar_style.css">
     <style>
         /* Estilos gerais e da sidebar */

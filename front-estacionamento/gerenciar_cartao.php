@@ -87,7 +87,7 @@ if ($result['http_code'] === 200 && isset($result['response']['cartoes'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciar Cartões</title>
+    <title>Gerenciar Cartões - Star Parking</title>
     <link rel="stylesheet" href="sidebar_style.css">
     <style>
         body {
@@ -203,6 +203,12 @@ if ($result['http_code'] === 200 && isset($result['response']['cartoes'])) {
             color: red;
             border-color: red;
         }
+
+        .input-largo {
+            width: 350px;
+            padding: 8px;
+            font-size: 14px;
+        }
     </style>
 </head>
 
@@ -242,10 +248,10 @@ if ($result['http_code'] === 200 && isset($result['response']['cartoes'])) {
                         <td>
                             <form method="POST" action="gerenciar_cartao.php">
                                 <input type="hidden" name="id_cartao" value="<?= $cartao['ID_Cartao'] ?>">
-                                <input type="text" name="nome_cartao" value="<?= $cartao['Nome_Cartao'] ?>" required>
+                                <input type="text" name="nome_cartao" value="<?= $cartao['Nome_Cartao'] ?>" required class="input-largo">
                         </td>
                         <td>
-                            <input type="text" name="ns_cartao" value="<?= $cartao['NS_Cartao'] ?>" required>
+                            <input type="text" name="ns_cartao" value="<?= $cartao['NS_Cartao'] ?>" required class="input-largo">
                         </td>
                         <td>
                             <button type="submit">Atualizar</button>

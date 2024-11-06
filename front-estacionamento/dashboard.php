@@ -1,8 +1,4 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
 // URL da API
 $api_url = 'http://localhost/api-estacionamento/api/movimentacao/index.php'; // Ajuste para o seu domínio
 
@@ -52,8 +48,8 @@ $movimentacoes = getMovimentacoes($api_url);
         </div>
 
         <div class="content">
-            <h1>Dashboard</h1>
-            <h2>Movimentações Recentes</h2>
+            <h1>Dashboard</h1><br>
+            <h3>Movimentações</h3>
             <table>
                 <tr>
                     <th>Hora de Entrada</th>
