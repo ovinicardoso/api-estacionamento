@@ -53,6 +53,8 @@ class Pessoa
         $stmt->bindParam(':Email', $this->Email);
 
         if ($stmt->execute()) {
+            $this->ID_Pessoa = $this->conn->lastInsertId();
+
             return true;
         }
         return false;

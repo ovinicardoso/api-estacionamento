@@ -4,6 +4,7 @@ header("Content-Type: application/json; charset=UTF-8");
 
 require_once '../../config/database.php';
 require_once '../../models/Pessoa.php';
+require_once '../../models/Cartao.php';
 
 $database = new Database();
 $db = $database->getConnection();
@@ -13,11 +14,8 @@ $pessoa = new Pessoa($db);
 // Obter o método HTTP da requisição
 $method = $_SERVER['REQUEST_METHOD'];
 
-// Pegar o ID da URL para operações de PUT e DELETE
+// Pegar o ID da URL
 $id = isset($_GET['id']) ? $_GET['id'] : null;
-
-// Adicione este código para depuração
-error_log("Método: $method");
 
 switch ($method) {
     case 'GET':
@@ -56,9 +54,20 @@ switch ($method) {
             $pessoa->Nome_Pessoa = $data->Nome_Pessoa;
             $pessoa->Telefone = $data->Telefone;
             $pessoa->Email = isset($data->Email) ? $data->Email : null;
+            $id_cartao = isset($data->ID_Cartao) ? $data->ID_Cartao : null; // Obter o ID do Cartão
 
             if ($pessoa->criar()) {
-                echo json_encode(array("message" => "Pessoa criada com sucesso."));
+                // Após criar a pessoa, associar o cartão
+                if ($id_cartao) {
+                    $cartao = new Cartao($db);
+                    if ($cartao->associarPessoa($id_cartao, $pessoa->ID_Pessoa)) {
+                        echo json_encode(array("message" => "Pessoa criada com sucesso e cartão associado."));
+                    } else {
+                        echo json_encode(array("message" => "Pessoa criada, mas falha ao associar o cartão."));
+                    }
+                } else {
+                    echo json_encode(array("message" => "Pessoa criada com sucesso, mas sem cartão associado."));
+                }
             } else {
                 echo json_encode(array("message" => "Erro ao criar pessoa."));
             }

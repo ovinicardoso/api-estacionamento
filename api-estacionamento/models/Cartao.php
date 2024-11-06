@@ -29,6 +29,23 @@ class Cartao
 
         return false;
     }
+
+    // Método para associar o cartão à pessoa
+    public function associarPessoa($id_cartao, $id_pessoa)
+    {
+        // Atualizar a tabela Pessoa com o ID_Cartao correspondente
+        $query = "UPDATE Pessoa SET ID_Cartao = :ID_Cartao WHERE ID_Pessoa = :ID_Pessoa";
+        $stmt = $this->conn->prepare($query);
+
+        $stmt->bindParam(':ID_Cartao', $id_cartao);
+        $stmt->bindParam(':ID_Pessoa', $id_pessoa);
+
+        if ($stmt->execute()) {
+            return true;
+        }
+        return false;
+    }
+
     // Listar os cartões
     public function listar()
     {
