@@ -1,12 +1,6 @@
 <?php
 include('controle_estacionamento.php');
 
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-if ($conn->connect_error) {
-    die("Conexão falhou: " . $conn->connect_error);
-}
-
 $message = ""; // Variável para armazenar a mensagem de feedback
 
 // Adicionando um novo cartão
@@ -14,18 +8,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nome_cartao = $_POST['Nome_Cartao']; // Nome do cartão
     $ns_cartao = $_POST['NS_Cartao']; // Número do cartão
 
-    // Insere o novo cartão com ID_Pessoa nulo
-    $sql_cartao = $conn->prepare("INSERT INTO Cartao (Nome_Cartao, NS_Cartao, ID_Pessoa) VALUES (?, ?, NULL)");
-    $sql_cartao->bind_param("ss", $nome_cartao, $ns_cartao);
+    // Configura os dados que serão enviados para a API
+    $data = array(
+        'Nome_Cartao' => $nome_cartao,
+        'NS_Cartao' => $ns_cartao
+    );
 
-    if ($sql_cartao->execute()) {
-        $message = "Cartão adicionado com sucesso!"; // Mensagem de sucesso
+    // Converte o array em JSON
+    $json_data = json_encode($data);
+
+    // Opções do contexto da requisição HTTP
+    $options = array(
+        'http' => array(
+            'header'  => "Content-type: application/json\r\n",
+            'method'  => 'POST',
+            'content' => $json_data,
+        ),
+    );
+
+    // Cria o contexto com as opções definidas
+    $context = stream_context_create($options);
+
+    // URL da API (substitua pela URL correta)
+    $url = 'http://localhost/api-estacionamento/api/cartoes/index.php';
+
+    // Faz a requisição e captura a resposta
+    $response = file_get_contents($url, false, $context);
+
+    // Verifica se a requisição foi bem-sucedida
+    if ($response === false) {
+        $message = "Erro ao conectar com a API.";
     } else {
-        $message = "Erro ao adicionar cartão: " . $sql_cartao->error; // Mensagem de erro
-    }
+        // Converte a resposta de JSON para array
+        $response_data = json_decode($response, true);
 
-    $sql_cartao->close();
+        // Verifica se o cartão foi adicionado com sucesso
+        if (isset($response_data['message'])) {
+            $message = $response_data['message']; // Exibe a mensagem retornada pela API
+        } else {
+            $message = "Erro inesperado ao adicionar o cartão.";
+        }
+    }
 }
+?>
 
 $conn->close();
 ?>
@@ -119,12 +144,12 @@ $conn->close();
     <div class="content">
         <div class="form-container">
             <h1>Adicionar Novo Cartão</h1>
-            <form method="POST">
+            <form method="POST" action="">
                 <label>Nome do Cartão:</label>
-                <input type="text" name="nome_cartao" required>
+                <input type="text" name="Nome_Cartao" id="Nome_Cartao" required>
                 
                 <label>Número de Série do Cartão:</label>
-                <input type="text" name="ns_cartao" required>
+                <input type="text" name="NS_Cartao" id="NS_Cartao" required>
                 
                 <input type="submit" value="Adicionar">
             </form>
