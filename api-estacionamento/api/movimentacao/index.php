@@ -33,14 +33,14 @@ switch ($method) {
                     Cartao c ON m.ID_Cartao = c.ID_Cartao 
                 LEFT JOIN 
                     Vaga v ON m.ID_Vaga = v.ID_Vaga";
-    
+
             $stmt = $conn->prepare($query);
             $stmt->execute();
             $movimentacoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
             echo json_encode($movimentacoes);
         }
         break;
-    
+
     case 'POST':
         // Cria uma nova movimentação
         $data = json_decode(file_get_contents("php://input"));
@@ -64,7 +64,7 @@ switch ($method) {
         $movimentacao->hora_saida = $data->hora_saida;
         $movimentacao->id_cartao = $data->id_cartao;
         $movimentacao->id_vaga = $data->id_vaga;
-        
+
         if ($movimentacao->update()) {
             echo json_encode(["message" => "Movimentação atualizada com sucesso."]);
         } else {
@@ -88,4 +88,3 @@ switch ($method) {
         echo json_encode(["message" => "Método não suportado."]);
         break;
 }
-?>

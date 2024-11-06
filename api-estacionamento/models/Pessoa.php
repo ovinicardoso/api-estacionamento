@@ -1,5 +1,6 @@
 <?php
-class Pessoa {
+class Pessoa
+{
     private $conn;
     private $table_name = "Pessoa";
 
@@ -8,12 +9,14 @@ class Pessoa {
     public $Telefone;
     public $Email;
 
-    public function __construct($db) {
+    public function __construct($db)
+    {
         $this->conn = $db;
     }
 
     // Listar todas as pessoas
-    public function listar() {
+    public function listar()
+    {
         $query = "SELECT * FROM " . $this->table_name;
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
@@ -21,19 +24,21 @@ class Pessoa {
     }
 
     // Obter uma pessoa por ID
-    public function obterPorId() {
-    $query = "SELECT * FROM " . $this->table_name . " WHERE ID_Pessoa = :ID_Pessoa";
-    $stmt = $this->conn->prepare($query);
+    public function obterPorId()
+    {
+        $query = "SELECT * FROM " . $this->table_name . " WHERE ID_Pessoa = :ID_Pessoa";
+        $stmt = $this->conn->prepare($query);
 
-    // Bind do parâmetro
-    $stmt->bindParam(':ID_Pessoa', $this->ID_Pessoa);
-    $stmt->execute();
+        // Bind do parâmetro
+        $stmt->bindParam(':ID_Pessoa', $this->ID_Pessoa);
+        $stmt->execute();
 
-    return $stmt;
+        return $stmt;
     }
 
     // Criar uma nova pessoa
-    public function criar() {
+    public function criar()
+    {
         $query = "INSERT INTO " . $this->table_name . " (Nome_Pessoa, Telefone, Email) VALUES (:Nome_Pessoa, :Telefone, :Email)";
         $stmt = $this->conn->prepare($query);
 
@@ -54,7 +59,8 @@ class Pessoa {
     }
 
     // Atualizar uma pessoa existente
-    public function atualizar() {
+    public function atualizar()
+    {
         $query = "UPDATE " . $this->table_name . " SET Nome_Pessoa = :Nome_Pessoa, Telefone = :Telefone, Email = :Email WHERE ID_Pessoa = :ID_Pessoa";
         $stmt = $this->conn->prepare($query);
 
@@ -77,7 +83,8 @@ class Pessoa {
     }
 
     // Deletar uma pessoa
-    public function deletar() {
+    public function deletar()
+    {
         $query = "DELETE FROM " . $this->table_name . " WHERE ID_Pessoa = :ID_Pessoa";
         $stmt = $this->conn->prepare($query);
 
@@ -93,4 +100,3 @@ class Pessoa {
         return false;
     }
 }
-?>

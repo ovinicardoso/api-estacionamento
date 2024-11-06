@@ -1,5 +1,6 @@
 <?php
-class Movimentacao {
+class Movimentacao
+{
     private $conn;
 
     public $id_movimentacao;
@@ -8,12 +9,14 @@ class Movimentacao {
     public $id_cartao;
     public $id_vaga;
 
-    public function __construct($db) {
+    public function __construct($db)
+    {
         $this->conn = $db;
     }
 
     // Método para criar uma movimentação
-    public function create() {
+    public function create()
+    {
         $query = "INSERT INTO Movimentacao (Hora_Entrada, Hora_Saida, ID_Cartao, ID_Vaga) VALUES (:hora_entrada, :hora_saida, :id_cartao, :id_vaga)";
         $stmt = $this->conn->prepare($query);
 
@@ -26,7 +29,8 @@ class Movimentacao {
     }
 
     // Método para ler todas as movimentações
-    public function readAll() {
+    public function readAll()
+    {
         $query = "SELECT * FROM Movimentacao";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
@@ -34,7 +38,8 @@ class Movimentacao {
     }
 
     // Método para ler uma movimentação específica
-    public function read() {
+    public function read()
+    {
         $query = "SELECT * FROM Movimentacao WHERE ID_Movimentacao = :id_movimentacao";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id_movimentacao', $this->id_movimentacao);
@@ -50,31 +55,33 @@ class Movimentacao {
     }
 
     // Método para atualizar o status da vaga
-    private function updateVagaStatus($status) {
-    // Mapeia o status para 0 (não ocupado) ou 1 (ocupado)
-    $statusValue = ($status === 'ocupada') ? 1 : 0; // 1 para 'ocupada', 0 para 'livre'
+    private function updateVagaStatus($status)
+    {
+        // Mapeia o status para 0 (não ocupado) ou 1 (ocupado)
+        $statusValue = ($status === 'ocupada') ? 1 : 0; // 1 para 'ocupada', 0 para 'livre'
 
-    // Atualiza o status da vaga
-    $query = "UPDATE Vaga SET Ocupado = :status WHERE ID_Vaga = :id_vaga";
-    $stmt = $this->conn->prepare($query);
+        // Atualiza o status da vaga
+        $query = "UPDATE Vaga SET Ocupado = :status WHERE ID_Vaga = :id_vaga";
+        $stmt = $this->conn->prepare($query);
 
-    $stmt->bindParam(':status', $statusValue);
-    $stmt->bindParam(':id_vaga', $this->id_vaga);
+        $stmt->bindParam(':status', $statusValue);
+        $stmt->bindParam(':id_vaga', $this->id_vaga);
 
-    return $stmt->execute();
+        return $stmt->execute();
     }
 
     // Método para atualizar uma movimentação
-    public function update() {
+    public function update()
+    {
         $query = "UPDATE Movimentacao SET Hora_Entrada = :hora_entrada, Hora_Saida = :hora_saida, ID_Cartao = :id_cartao, ID_Vaga = :id_vaga WHERE ID_Movimentacao = :id_movimentacao";
         $stmt = $this->conn->prepare($query);
-    
+
         $stmt->bindParam(':id_movimentacao', $this->id_movimentacao);
         $stmt->bindParam(':hora_entrada', $this->hora_entrada);
         $stmt->bindParam(':hora_saida', $this->hora_saida);
         $stmt->bindParam(':id_cartao', $this->id_cartao);
         $stmt->bindParam(':id_vaga', $this->id_vaga);
-    
+
         if ($stmt->execute()) {
             // Atualiza o status da vaga com base na hora de saída
             if ($this->hora_saida) {
@@ -85,10 +92,11 @@ class Movimentacao {
         }
         return false; // Se a atualização falhar, retorna falso
     }
-    
+
 
     // Método para deletar uma movimentação
-    public function delete() {
+    public function delete()
+    {
         $query = "DELETE FROM Movimentacao WHERE ID_Movimentacao = :id_movimentacao";
         $stmt = $this->conn->prepare($query);
 
@@ -96,4 +104,3 @@ class Movimentacao {
         return $stmt->execute();
     }
 }
-?>

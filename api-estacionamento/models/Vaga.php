@@ -1,5 +1,6 @@
 <?php
-class Vaga {
+class Vaga
+{
     private $conn;
     private $table_name = "Vaga";
 
@@ -7,12 +8,14 @@ class Vaga {
     public $Nome_Vaga;
     public $Ocupado;
 
-    public function __construct($db) {
+    public function __construct($db)
+    {
         $this->conn = $db;
     }
 
     // Método para criar uma nova vaga
-    public function criar() {
+    public function criar()
+    {
         $query = "INSERT INTO " . $this->table_name . " (Nome_Vaga, Ocupado) VALUES (:Nome_Vaga, :Ocupado)";
         $stmt = $this->conn->prepare($query);
 
@@ -27,7 +30,8 @@ class Vaga {
     }
 
     // Método para listar todas as vagas
-    public function listar() {
+    public function listar()
+    {
         $query = "SELECT * FROM " . $this->table_name;
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
@@ -36,7 +40,8 @@ class Vaga {
     }
 
     // Método para atualizar uma vaga
-    public function atualizarStatus($ID_Vaga, $Ocupado) {
+    public function atualizarStatus($ID_Vaga, $Ocupado)
+    {
         $query = "UPDATE " . $this->table_name . " SET Ocupado = :Ocupado WHERE ID_Vaga = :ID_Vaga";
         $stmt = $this->conn->prepare($query);
 
@@ -51,7 +56,8 @@ class Vaga {
     }
 
     // Método para deletar uma vaga
-    public function deletar() {
+    public function deletar()
+    {
         $query = "DELETE FROM " . $this->table_name . " WHERE ID_Vaga = :ID_Vaga";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':ID_Vaga', $this->ID_Vaga);
@@ -63,4 +69,3 @@ class Vaga {
         return false;
     }
 }
-?>

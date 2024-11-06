@@ -14,7 +14,6 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 switch ($method) {
     case 'GET':
-        // Listar cartões ou um específico
         if (isset($_GET['id'])) {
             $cartao->ID_Cartao = $_GET['id'];
             $stmt = $cartao->listarPorId();
@@ -33,8 +32,7 @@ switch ($method) {
                     $cartao_item = array(
                         "ID_Cartao" => $ID_Cartao,
                         "Nome_Cartao" => $Nome_Cartao,
-                        "NS_Cartao" => $NS_Cartao,
-                        "ID_Pessoa" => $ID_Pessoa
+                        "NS_Cartao" => $NS_Cartao
                     );
                     array_push($cartoes_arr["cartoes"], $cartao_item);
                 }
@@ -45,34 +43,32 @@ switch ($method) {
         }
         break;
 
-        case 'POST':
-            // Criar novo cartão
-            $data = json_decode(file_get_contents("php://input"));
-        
-            if (!empty($data->NS_Cartao) && !empty($data->Nome_Cartao)) {
-                $cartao->Nome_Cartao = $data->Nome_Cartao;
-                $cartao->NS_Cartao = $data->NS_Cartao;
-        
-                if ($cartao->criar()) {
-                    echo json_encode(array("message" => "Cartão criado com sucesso."));
-                } else {
-                    echo json_encode(array("message" => "Falha ao criar o cartão."));
-                }
-            } else {
-                echo json_encode(array("message" => "Dados incompletos."));
-            }
-            break;
-        
-
-    case 'PUT':
-        // Atualizar cartão
+    case 'POST':
+        // Criar novo cartão
         $data = json_decode(file_get_contents("php://input"));
 
-        if (!empty($data->ID_Cartao) && !empty($data->NS_Cartao) && !empty($data->ID_Pessoa)) {
+        if (!empty($data->NS_Cartao) && !empty($data->Nome_Cartao)) {
+            $cartao->Nome_Cartao = $data->Nome_Cartao;
+            $cartao->NS_Cartao = $data->NS_Cartao;
+
+            if ($cartao->criar()) {
+                echo json_encode(array("message" => "Cartão criado com sucesso."));
+            } else {
+                echo json_encode(array("message" => "Falha ao criar o cartão."));
+            }
+        } else {
+            echo json_encode(array("message" => "Dados incompletos."));
+        }
+        break;
+
+    case 'PUT':
+        // Atualizar cartão existente
+        $data = json_decode(file_get_contents("php://input"));
+
+        if (!empty($data->ID_Cartao) && !empty($data->NS_Cartao) && !empty($data->Nome_Cartao)) {
             $cartao->ID_Cartao = $data->ID_Cartao;
             $cartao->Nome_Cartao = $data->Nome_Cartao;
             $cartao->NS_Cartao = $data->NS_Cartao;
-            $cartao->ID_Pessoa = $data->ID_Pessoa;
 
             if ($cartao->atualizar()) {
                 echo json_encode(array("message" => "Cartão atualizado com sucesso."));
@@ -105,4 +101,3 @@ switch ($method) {
         echo json_encode(array("message" => "Método não permitido."));
         break;
 }
-?>

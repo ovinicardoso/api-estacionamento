@@ -103,4 +103,3 @@ switch ($method) {
         echo json_encode(array("message" => "Método não suportado."));
         break;
 }
-?>
