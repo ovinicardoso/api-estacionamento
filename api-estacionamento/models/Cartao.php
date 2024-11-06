@@ -14,19 +14,19 @@ class Cartao {
 
     // Criar um novo cartão
     public function criar() {
-        $query = "INSERT INTO " . $this->table_name . " (Nome_Cartao, NS_Cartao, ID_Pessoa) VALUES (:Nome_Cartao, :NS_Cartao, :ID_Pessoa)";
+        $query = "INSERT INTO " . $this->table_name . " (Nome_Cartao, NS_Cartao) VALUES (:Nome_Cartao, :NS_Cartao)";
         $stmt = $this->conn->prepare($query);
-
+    
         $stmt->bindParam(':Nome_Cartao', $this->Nome_Cartao);
         $stmt->bindParam(':NS_Cartao', $this->NS_Cartao);
-        $stmt->bindParam(':ID_Pessoa', $this->ID_Pessoa);
-
+    
         if ($stmt->execute()) {
             return true;
         }
-
+    
         return false;
     }
+    
 
     // Listar todos os cartões
     public function listar() {

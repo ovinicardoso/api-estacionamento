@@ -45,24 +45,24 @@ switch ($method) {
         }
         break;
 
-    case 'POST':
-        // Criar novo cartão
-        $data = json_decode(file_get_contents("php://input"));
-
-        if (!empty($data->NS_Cartao) && !empty($data->ID_Pessoa) && !empty($data->Nome_Cartao)) {
-            $cartao->Nome_Cartao = $data->Nome_Cartao;
-            $cartao->NS_Cartao = $data->NS_Cartao;
-            $cartao->ID_Pessoa = $data->ID_Pessoa;
-
-            if ($cartao->criar()) {
-                echo json_encode(array("message" => "Cartão criado com sucesso."));
+        case 'POST':
+            // Criar novo cartão
+            $data = json_decode(file_get_contents("php://input"));
+        
+            if (!empty($data->NS_Cartao) && !empty($data->Nome_Cartao)) {
+                $cartao->Nome_Cartao = $data->Nome_Cartao;
+                $cartao->NS_Cartao = $data->NS_Cartao;
+        
+                if ($cartao->criar()) {
+                    echo json_encode(array("message" => "Cartão criado com sucesso."));
+                } else {
+                    echo json_encode(array("message" => "Falha ao criar o cartão."));
+                }
             } else {
-                echo json_encode(array("message" => "Falha ao criar o cartão."));
+                echo json_encode(array("message" => "Dados incompletos."));
             }
-        } else {
-            echo json_encode(array("message" => "Dados incompletos."));
-        }
-        break;
+            break;
+        
 
     case 'PUT':
         // Atualizar cartão
