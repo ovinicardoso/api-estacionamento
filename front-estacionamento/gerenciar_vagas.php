@@ -1,9 +1,27 @@
 <?php
-include('controle_estacionamento.php'); // Inclui o arquivo de conexão ao banco de dados
+// URL da API
+$api_url = 'http://localhost/api-estacionamento/api/vagas/index.php';
 
-$conn = new mysqli($servername, $username, $password, $dbname);
-if ($conn->connect_error) {
-    die("Conexão falhou: " . $conn->connect_error);
+// Função para fazer requisições à API
+function fazer_requisicao_api($url, $dados = null, $metodo = 'GET')
+{
+    $ch = curl_init();
+
+    if ($metodo == 'POST' || $metodo == 'PUT') {
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dados));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            'Content-Type: application/json',
+        ));
+    }
+
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $metodo);
+
+    $resposta = curl_exec($ch);
+    curl_close($ch);
+
+    return json_decode($resposta, true);
 }
 
 // Manipulação da ocupação da vaga e atualização do nome
@@ -13,23 +31,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Atualizar nome da vaga se um novo nome for enviado
     if (isset($_POST['novo_nome'])) {
         $novo_nome = $_POST['novo_nome'];
-        $update_nome_sql = "UPDATE Vaga SET Nome_Vaga = ? WHERE ID_Vaga = ?";
-        $update_nome_stmt = $conn->prepare($update_nome_sql);
-        $update_nome_stmt->bind_param("si", $novo_nome, $vaga_id);
-        $update_nome_stmt->execute();
+        $dados = array(
+            "ID_Vaga" => $vaga_id,
+            "Nome_Vaga" => $novo_nome
+        );
+        fazer_requisicao_api($api_url, $dados, 'PUT');
     } else {
         // Alterna entre ocupar e desocupar a vaga
         $ocupado = $_POST['ocupado'] == 1 ? 0 : 1;
-        $update_vaga_sql = "UPDATE Vaga SET Ocupado = ? WHERE ID_Vaga = ?";
-        $update_vaga_stmt = $conn->prepare($update_vaga_sql);
-        $update_vaga_stmt->bind_param("ii", $ocupado, $vaga_id);
-        $update_vaga_stmt->execute();
+        $dados = array(
+            "ID_Vaga" => $vaga_id,
+            "Ocupado" => $ocupado
+        );
+        fazer_requisicao_api($api_url, $dados, 'PUT');
     }
 }
 
-// Consulta para obter o status das três vagas
-$vagas_sql = "SELECT ID_Vaga, Nome_Vaga, Ocupado FROM Vaga WHERE ID_Vaga IN (1, 2, 3)";
-$vagas_result = $conn->query($vagas_sql);
+$vagas_resposta = fazer_requisicao_api($api_url);
+$vagas_result = $vagas_resposta['vagas'] ?? [];
 ?>
 
 <!DOCTYPE html>
@@ -41,7 +60,6 @@ $vagas_result = $conn->query($vagas_sql);
     <title>Gerenciar Vagas - Star Parking</title>
     <link rel="stylesheet" href="sidebar_style.css">
     <style>
-        /* Estilos adicionais para a página de gerenciamento de vagas */
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
@@ -86,6 +104,16 @@ $vagas_result = $conn->query($vagas_sql);
         button:hover {
             background-color: #0056b3;
         }
+
+        .sucesso {
+            color: green;
+            font-weight: bold;
+        }
+
+        .erro {
+            color: red;
+            font-weight: bold;
+        }
     </style>
 </head>
 
@@ -107,11 +135,10 @@ $vagas_result = $conn->query($vagas_sql);
 
         <div class="content">
             <h1>Gerenciar Vagas</h1>
-            <div class="vaga-container">
-                <?php while ($vaga = $vagas_result->fetch_assoc()): ?>
+            <div id="vaga-container" class="vaga-container">
+                <?php foreach ($vagas_result as $vaga): ?>
                     <div class="vaga <?php echo $vaga['Ocupado'] == 1 ? 'ocupada' : 'livre'; ?>">
                         <form method="POST">
-                            <h3><?php echo $vaga['Nome_Vaga']; ?></h3>
                             <input type="text" name="novo_nome" value="<?php echo htmlspecialchars($vaga['Nome_Vaga']); ?>">
                             <input type="hidden" name="vaga_id" value="<?php echo $vaga['ID_Vaga']; ?>">
                             <button type="submit">Salvar Nome</button>
@@ -123,15 +150,47 @@ $vagas_result = $conn->query($vagas_sql);
                             <button type="submit"><?php echo $vaga['Ocupado'] == 1 ? 'Desocupar' : 'Ocupar'; ?></button>
                         </form>
                     </div>
-                <?php endwhile; ?>
+                <?php endforeach; ?>
             </div>
+            <div id="mensagem-sucesso" class="sucesso"></div>
         </div>
     </div>
+
+    <script>
+        setInterval(function() {
+            fetchVagas();
+        }, 5000);
+
+        function fetchVagas() {
+            fetch("http://localhost/api-estacionamento/api/vagas/index.php")
+                .then(response => response.json())
+                .then(data => {
+                    const vagasContainer = document.getElementById("vaga-container");
+                    vagasContainer.innerHTML = '';
+                    data.vagas.forEach(vaga => {
+                        const vagaDiv = document.createElement("div");
+                        vagaDiv.classList.add("vaga");
+                        vagaDiv.classList.add(vaga.Ocupado == 1 ? "ocupada" : "livre");
+
+                        vagaDiv.innerHTML = `
+                            <form method="POST">
+                                <input type="text" name="novo_nome" value="${vaga.Nome_Vaga}">
+                                <input type="hidden" name="vaga_id" value="${vaga.ID_Vaga}">
+                                <button type="submit">Salvar Nome</button>
+                            </form>
+                            <p>Status: ${vaga.Ocupado == 1 ? "Ocupada" : "Livre"}</p>
+                            <form method="POST">
+                                <input type="hidden" name="vaga_id" value="${vaga.ID_Vaga}">
+                                <input type="hidden" name="ocupado" value="${vaga.Ocupado}">
+                                <button type="submit">${vaga.Ocupado == 1 ? 'Desocupar' : 'Ocupar'}</button>
+                            </form>
+                        `;
+                        vagasContainer.appendChild(vagaDiv);
+                    });
+                });
+        }
+    </script>
 
 </body>
 
 </html>
-
-<?php
-$conn->close();
-?>
