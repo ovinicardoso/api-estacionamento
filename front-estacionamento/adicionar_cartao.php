@@ -109,21 +109,20 @@ $conn->close();
             background-color: #45a049;
         }
 
-        /* Estilo da caixa de mensagem */
         .message {
             padding: 10px;
-            background-color: #e8f4e5; /* Fundo suave */
-            border: 1px solid #c2e4d7; /* Borda suave */
+            background-color: #e8f4e5;
+            border: 1px solid #c2e4d7;
             border-radius: 5px;
             margin-top: 20px;
-            color: #2c662d; /* Texto em verde */
+            color: #2c662d;
             font-weight: bold;
         }
 
         .error-message {
-            background-color: #f8d7da; /* Fundo suave para erro */
-            border: 1px solid #f5c6cb; /* Borda suave para erro */
-            color: #721c24; /* Texto em vermelho */
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
         }
     </style>
 </head>
