@@ -20,15 +20,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $sql_pessoa->bind_param("sss", $nome_usuario, $telefone, $email);
 
     if ($sql_pessoa->execute()) {
-        $id_pessoa = $conn->insert_id; 
-        
+        $id_pessoa = $conn->insert_id;
+
         // Atualizar o cartão para associá-lo à nova pessoa
         $sql_atualizar_cartao = $conn->prepare("UPDATE Cartao SET ID_Pessoa = ? WHERE ID_Cartao = ?");
         $sql_atualizar_cartao->bind_param("ii", $id_pessoa, $id_cartao);
         $sql_atualizar_cartao->execute();
-        
+
         $sql_atualizar_cartao->close();
-        
+
         // Mensagem de sucesso
         $mensagem = "Pessoa adicionada com sucesso!";
     } else {
@@ -45,6 +45,7 @@ $conn->close();
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -75,7 +76,9 @@ $conn->close();
             margin-top: 10px;
         }
 
-        input[type="text"], input[type="email"], select {
+        input[type="text"],
+        input[type="email"],
+        select {
             width: 100%;
             padding: 10px;
             margin: 5px 0 15px;
@@ -99,18 +102,22 @@ $conn->close();
         .mensagem {
             margin-top: 20px;
             padding: 10px;
-            color: green; /* Cor da mensagem de sucesso */
-            background-color: #e8f8e8; /* Fundo verde claro */
-            border: 1px solid #d4eed4; /* Borda verde clara */
+            color: green;
+            /* Cor da mensagem de sucesso */
+            background-color: #e8f8e8;
+            /* Fundo verde claro */
+            border: 1px solid #d4eed4;
+            /* Borda verde clara */
             border-radius: 4px;
         }
     </style>
 </head>
+
 <body>
     <div class="sidebar">
         <h2>Star Parking</h2>
         <ul>
-        <li><a href="dashboard.php">Dashboard</a></li>
+            <li><a href="dashboard.php">Dashboard</a></li>
             <li><a href="gerenciar_vagas.php">Gerenciar Vagas</a></li>
             <li><a href="adicionar_pessoa.php">Adicionar Pessoa</a></li>
             <li><a href="gerenciar_pessoa.php">Gerenciar Pessoas</a></li>
@@ -129,13 +136,13 @@ $conn->close();
             <form method="POST">
                 <label>Nome:</label>
                 <input type="text" name="nome_usuario" required>
-                
+
                 <label>Telefone:</label>
                 <input type="text" name="telefone" required>
-                
+
                 <label>Email:</label>
                 <input type="email" name="email" required>
-                
+
                 <label>Cartão:</label>
                 <select name="id_cartao" required>
                     <option value="">Selecione um cartão</option>
@@ -143,10 +150,11 @@ $conn->close();
                         <option value="<?= $cartao['ID_Cartao'] ?>"><?= $cartao['Nome_Cartao'] . ' - ' . $cartao['NS_Cartao'] ?></option>
                     <?php endwhile; ?>
                 </select>
-                
+
                 <input type="submit" value="Adicionar">
             </form>
         </div>
     </div>
 </body>
+
 </html>

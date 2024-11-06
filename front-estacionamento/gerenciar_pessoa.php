@@ -85,6 +85,7 @@ $result_cartoes = $conn->query($sql_cartoes);
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -98,10 +99,12 @@ $result_cartoes = $conn->query($sql_cartoes);
             display: flex;
             height: 100vh;
         }
+
         .container {
             display: flex;
             width: 100%;
         }
+
         .sidebar {
             width: 20%;
             background-color: #2c3e50;
@@ -112,15 +115,19 @@ $result_cartoes = $conn->query($sql_cartoes);
             height: 100vh;
             position: fixed;
         }
+
         .sidebar h2 {
             margin-bottom: 30px;
         }
+
         .sidebar ul {
             list-style-type: none;
         }
+
         .sidebar ul li {
             margin-bottom: 20px;
         }
+
         .sidebar ul li a {
             color: white;
             text-decoration: none;
@@ -130,14 +137,17 @@ $result_cartoes = $conn->query($sql_cartoes);
             border-radius: 5px;
             transition: background-color 0.3s;
         }
+
         .sidebar ul li a:hover {
             background-color: #34495e;
         }
+
         .content {
             margin-left: 20%;
             padding: 20px;
             width: 80%;
         }
+
         .message {
             background-color: #d4edda;
             color: #155724;
@@ -146,29 +156,36 @@ $result_cartoes = $conn->query($sql_cartoes);
             margin-bottom: 20px;
             border-radius: 5px;
         }
+
         table {
             width: 80%;
             margin: 20px auto;
             border-collapse: collapse;
             background-color: white;
         }
-        th, td {
+
+        th,
+        td {
             border: 1px solid #ccc;
             padding: 10px;
             text-align: center;
         }
+
         th {
             background-color: #4CAF50;
             color: white;
         }
+
         tr:nth-child(even) {
             background-color: #f2f2f2;
         }
+
         tr:hover {
             background-color: #ddd;
         }
     </style>
 </head>
+
 <body>
     <div class="sidebar">
         <h2>Star Parking</h2>
@@ -203,7 +220,7 @@ $result_cartoes = $conn->query($sql_cartoes);
             </thead>
             <tbody>
                 <?php if ($result->num_rows > 0): ?>
-                    <?php while($row = $result->fetch_assoc()): ?>
+                    <?php while ($row = $result->fetch_assoc()): ?>
                         <tr>
                             <td>
                                 <form method="POST" style="display: inline;">
@@ -211,10 +228,10 @@ $result_cartoes = $conn->query($sql_cartoes);
                                     <input type="text" name="nome_usuario" value="<?= htmlspecialchars($row['Nome_Pessoa']) ?>" required>
                             </td>
                             <td>
-                                    <input type="text" name="telefone" value="<?= htmlspecialchars($row['Telefone']) ?>" required>
+                                <input type="text" name="telefone" value="<?= htmlspecialchars($row['Telefone']) ?>" required>
                             </td>
                             <td>
-                                    <input type="email" name="email" value="<?= htmlspecialchars($row['Email']) ?>" required>
+                                <input type="email" name="email" value="<?= htmlspecialchars($row['Email']) ?>" required>
                             </td>
                             <td>
                                 <?php
@@ -251,6 +268,7 @@ $result_cartoes = $conn->query($sql_cartoes);
         </table>
     </div>
 </body>
+
 </html>
 
 <?php

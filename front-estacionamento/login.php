@@ -11,7 +11,7 @@ $password = '';
 try {
     $conn = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch(PDOException $e) {
+} catch (PDOException $e) {
     die("Erro de conexão: " . $e->getMessage());
 }
 
@@ -49,6 +49,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -63,6 +64,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             height: 100vh;
             margin: 0;
         }
+
         .login-container {
             background-color: #fff;
             padding: 20px;
@@ -71,9 +73,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             width: 300px;
             text-align: center;
         }
+
         .login-container h2 {
             margin-bottom: 20px;
         }
+
         .login-container input[type="email"],
         .login-container input[type="password"] {
             width: 90%;
@@ -82,6 +86,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             border: 1px solid #ccc;
             border-radius: 4px;
         }
+
         .login-container button {
             width: 100%;
             padding: 10px;
@@ -91,28 +96,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             border-radius: 4px;
             cursor: pointer;
         }
+
         .login-container button:hover {
             background-color: #45a049;
         }
+
         .error-message {
             color: red;
             margin-top: 10px;
         }
     </style>
 </head>
+
 <body>
 
-<div class="login-container">
-    <h2>Login</h2>
-    <form method="POST" action="">
-        <input type="email" name="email" placeholder="Email" required>
-        <input type="password" name="senha" placeholder="Senha" required>
-        <button type="submit">Entrar</button>
-    </form>
-    <?php if ($loginError): ?>
-        <p class="error-message"><?php echo $loginError; ?></p>
-    <?php endif; ?>
-</div>
+    <div class="login-container">
+        <h2>Login</h2>
+        <form method="POST" action="">
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="password" name="senha" placeholder="Senha" required>
+            <button type="submit">Entrar</button>
+        </form>
+        <?php if ($loginError): ?>
+            <p class="error-message"><?php echo $loginError; ?></p>
+        <?php endif; ?>
+    </div>
 
 </body>
+
 </html>

@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Cria o contexto com as opções definidas
     $context = stream_context_create($options);
 
-    // URL da API (substitua pela URL correta)
+    // URL da API
     $url = 'http://localhost/api-estacionamento/api/cartoes/index.php';
 
     // Faz a requisição e captura a resposta
@@ -57,6 +57,7 @@ $conn->close();
 
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -87,7 +88,8 @@ $conn->close();
             margin-top: 10px;
         }
 
-        input[type="text"], input[type="email"] {
+        input[type="text"],
+        input[type="email"] {
             width: 100%;
             padding: 10px;
             margin: 5px 0 15px;
@@ -126,11 +128,12 @@ $conn->close();
         }
     </style>
 </head>
+
 <body>
     <div class="sidebar">
         <h2>Star Parking</h2>
         <ul>
-        <li><a href="dashboard.php">Dashboard</a></li>
+            <li><a href="dashboard.php">Dashboard</a></li>
             <li><a href="gerenciar_vagas.php">Gerenciar Vagas</a></li>
             <li><a href="adicionar_pessoa.php">Adicionar Pessoa</a></li>
             <li><a href="gerenciar_pessoa.php">Gerenciar Pessoas</a></li>
@@ -146,10 +149,10 @@ $conn->close();
             <form method="POST" action="">
                 <label>Nome do Cartão:</label>
                 <input type="text" name="Nome_Cartao" id="Nome_Cartao" required>
-                
+
                 <label>Número de Série do Cartão:</label>
                 <input type="text" name="NS_Cartao" id="NS_Cartao" required>
-                
+
                 <input type="submit" value="Adicionar">
             </form>
 
@@ -162,4 +165,5 @@ $conn->close();
         </div>
     </div>
 </body>
+
 </html>
