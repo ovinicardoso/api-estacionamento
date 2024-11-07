@@ -141,35 +141,44 @@ $conn->close();
         </ul>
     </div>
 
-    <div class="content">
-        <div class="form-container">
-            <h1>Adicionar Novo Cartão</h1>
-            <form method="POST" action="" onsubmit="return showPopup()">
-                <label>Nome do Cartão:</label>
-                <input type="text" name="Nome_Cartao" id="Nome_Cartao" required>
+<div class="content">
+    <div class="form-container">
+        <h1>Adicionar Novo Cartão</h1>
+        <form method="POST" action="" onsubmit="return showPopup()">
+            <label>Nome do Cartão:</label>
+            <input type="text" name="Nome_Cartao" id="Nome_Cartao" required>
+            <input type="submit" value="Adicionar">
+        </form>
 
-                <input type="submit" value="Adicionar">
-            </form>
-
-            <script>
-                function showPopup() {
+        <script>
+            function showPopup() {
                 // Exibe o popup
                 alert("Aproxime o cartão do leitor");
-
-                // Retorna `true` para permitir o envio do formulário
                 return true;
+            }
+
+            // Função para ocultar a mensagem após 3 segundos
+            function hideMessage() {
+                const messageBox = document.querySelector('.message');
+                if (messageBox) {
+                    setTimeout(() => {
+                        messageBox.style.display = 'none';
+                    }, 3000);
                 }
-            </script>
+            }
 
+            // Executa hideMessage ao carregar a página
+            window.onload = hideMessage;
+        </script>
 
-            <!-- Mensagem de feedback após a submissão -->
-            <?php if ($message): ?>
-                <div class="message <?php echo strpos($message, 'sucesso') !== false ? '' : 'error-message'; ?>">
-                    <?php echo $message; ?>
-                </div>
-            <?php endif; ?>
-        </div>
+        <!-- Mensagem de feedback após a submissão -->
+        <?php if ($message): ?>
+            <div class="message <?php echo strpos($message, 'sucesso') !== false ? '' : 'error-message'; ?>">
+                <?php echo $message; ?>
+            </div>
+        <?php endif; ?>
     </div>
+</div>
 </body>
 
 </html>
