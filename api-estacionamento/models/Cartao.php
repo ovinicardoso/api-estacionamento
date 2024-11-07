@@ -21,7 +21,7 @@ class Cartao
         $stmt = $this->conn->prepare($query);
 
         $stmt->bindParam(':Nome_Cartao', $this->Nome_Cartao);
-        $stmt->bindParam(':NS_Cartao', $this->NS_Cartao);
+        $stmt->bindParam(':NS_Cartao', $this->NS_Cartao, PDO::PARAM_NULL);
 
         if ($stmt->execute()) {
             return true;
@@ -111,5 +111,13 @@ class Cartao
         }
 
         return false;
+    }
+
+    // Buscar um cartão com NS vazio
+    public function buscarPorCartaoNulo() {
+        $query = "SELECT * FROM Cartao WHERE NS_Cartao IS NULL ORDER BY ID_Cartao DESC LIMIT 1";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt;
     }
 }

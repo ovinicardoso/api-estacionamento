@@ -47,19 +47,50 @@ switch ($method) {
         // Criar novo cartão
         $data = json_decode(file_get_contents("php://input"));
 
-        if (!empty($data->NS_Cartao) && !empty($data->Nome_Cartao)) {
+        if (!$data) {
+            echo json_encode(array("message" => "Erro: Nenhum dado JSON recebido."));
+            break;
+        }
+
+        if (!empty($data->Nome_Cartao)) {
+            // Armazena o nome do cartão e deixa NS_Cartao vazio
             $cartao->Nome_Cartao = $data->Nome_Cartao;
-            $cartao->NS_Cartao = $data->NS_Cartao;
+            $cartao->NS_Cartao = null; 
 
             if ($cartao->criar()) {
-                echo json_encode(array("message" => "Cartão criado com sucesso."));
+                echo json_encode(array("message" => "Nome do cartão armazenado. Aproxime o cartão do leitor."));
             } else {
-                echo json_encode(array("message" => "Falha ao criar o cartão."));
+                echo json_encode(array("message" => "Erro ao armazenar o nome do cartão."));
             }
+
+        } elseif (!empty($data->NS_Cartao)) {
+            // Define NS_Cartao e busca o último registro sem UID associado
+            $cartao->NS_Cartao = $data->NS_Cartao;
+
+            $stmt = $cartao->buscarPorCartaoNulo();
+            if ($stmt) {
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                if ($row) {
+                    $cartao->ID_Cartao = $row['ID_Cartao'];
+                    $cartao->Nome_Cartao = $row['Nome_Cartao'];
+
+                    if ($cartao->atualizar()) {
+                        echo json_encode(array("message" => "Cartão adicionado com sucesso."));
+                    } else {
+                        echo json_encode(array("message" => "Erro ao atualizar o cartão no banco de dados."));
+                    }
+                } else {
+                echo json_encode(array("message" => "Nenhum nome de cartão pendente encontrado. Envie o nome primeiro."));
+                }
+            } else {
+            echo json_encode(array("message" => "Erro ao buscar cartão pendente no banco de dados."));
+            }
+
         } else {
-            echo json_encode(array("message" => "Dados incompletos."));
+            echo json_encode(array("message" => "Dados incompletos. Envie Nome_Cartao ou NS_Cartao."));
         }
-        break;
+    break;
+
 
     case 'PUT':
         // Atualizar cartão existente
