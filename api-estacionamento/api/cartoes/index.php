@@ -4,6 +4,7 @@ header("Content-Type: application/json; charset=UTF-8");
 
 require_once '../../config/database.php';
 require_once '../../models/Cartao.php';
+require_once '../../models/Movimentacao.php';
 
 $database = new Database();
 $db = $database->getConnection();
@@ -57,13 +58,14 @@ switch ($method) {
             $cartao->Nome_Cartao = $data->Nome_Cartao;
             $cartao->NS_Cartao = null; 
 
-            if ($cartao->criar()) {
+            if ($cartao->criar()) { 
                 echo json_encode(array("message" => "Nome do cartão armazenado. Aproxime o cartão do leitor."));
             } else {
                 echo json_encode(array("message" => "Erro ao armazenar o nome do cartão."));
             }
 
         } elseif (!empty($data->NS_Cartao)) {
+
             // Define NS_Cartao e busca o último registro sem UID associado
             $cartao->NS_Cartao = $data->NS_Cartao;
 
