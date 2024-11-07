@@ -6,12 +6,10 @@ $message = ""; // Variável para armazenar a mensagem de feedback
 // Adicionando um novo cartão
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nome_cartao = $_POST['Nome_Cartao']; // Nome do cartão
-    $ns_cartao = $_POST['NS_Cartao']; // Número do cartão
 
     // Configura os dados que serão enviados para a API
     $data = array(
         'Nome_Cartao' => $nome_cartao,
-        'NS_Cartao' => $ns_cartao
     );
 
     // Converte o array em JSON
@@ -61,7 +59,7 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Adicionar Cartão - Star Parking</title>
+    <title>StarPark - Adicionar Cartão</title>
     <link rel="stylesheet" href="sidebar_style.css">
     <style>
         .content {
@@ -146,15 +144,23 @@ $conn->close();
     <div class="content">
         <div class="form-container">
             <h1>Adicionar Novo Cartão</h1>
-            <form method="POST" action="">
+            <form method="POST" action="" onsubmit="return showPopup()">
                 <label>Nome do Cartão:</label>
                 <input type="text" name="Nome_Cartao" id="Nome_Cartao" required>
 
-                <label>Número de Série do Cartão:</label>
-                <input type="text" name="NS_Cartao" id="NS_Cartao" required>
-
                 <input type="submit" value="Adicionar">
             </form>
+
+            <script>
+                function showPopup() {
+                // Exibe o popup
+                alert("Aproxime o cartão do leitor");
+
+                // Retorna `true` para permitir o envio do formulário
+                return true;
+                }
+            </script>
+
 
             <!-- Mensagem de feedback após a submissão -->
             <?php if ($message): ?>
