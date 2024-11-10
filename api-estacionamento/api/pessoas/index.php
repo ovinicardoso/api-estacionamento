@@ -34,7 +34,8 @@ switch ($method) {
                     "ID_Pessoa" => $ID_Pessoa,
                     "Nome_Pessoa" => $Nome_Pessoa,
                     "Telefone" => $Telefone,
-                    "Email" => $Email
+                    "Email" => $Email,
+                    "ID_Cartao" => $ID_Cartao
                 );
 
                 array_push($pessoas_arr["records"], $pessoa_item);
@@ -80,13 +81,20 @@ switch ($method) {
         // Atualizar uma pessoa existente
         $data = json_decode(file_get_contents("php://input"));
 
-        if (!empty($id) && !empty($data->Nome_Pessoa) && !empty($data->Telefone)) {
-            $pessoa->ID_Pessoa = $id;
+        if (!empty($data->ID_Pessoa) && !empty($data->Nome_Pessoa) && !empty($data->Telefone)) {
+            // Atribuindo os dados do JSON
+            $pessoa->ID_Pessoa = $data->ID_Pessoa;
             $pessoa->Nome_Pessoa = $data->Nome_Pessoa;
             $pessoa->Telefone = $data->Telefone;
-            $pessoa->Email = isset($data->Email) ? $data->Email : null;
+            $pessoa->Email = $data->Email;
 
-            if ($pessoa->atualizar()) {
+            // Verifica se o ID_Cartao foi enviado
+            if (isset($data->ID_Cartao)) {
+                $pessoa->ID_Cartao = $data->ID_Cartao;
+            }
+
+            // Chamando o método para atualizar o banco de dados
+            if ($pessoa->atualizar(isset($data->ID_Cartao))) {
                 echo json_encode(array("message" => "Pessoa atualizada com sucesso."));
             } else {
                 echo json_encode(array("message" => "Falha ao atualizar a pessoa."));
@@ -97,9 +105,11 @@ switch ($method) {
         break;
 
     case 'DELETE':
-        // Deletar uma pessoa existente
-        if (!empty($id)) {
-            $pessoa->ID_Pessoa = $id;
+        $data = json_decode(file_get_contents("php://input"));
+
+        // Verifica se o ID_Pessoa foi enviado no JSON
+        if (!empty($data->ID_Pessoa)) {
+            $pessoa->ID_Pessoa = $data->ID_Pessoa;
 
             if ($pessoa->deletar()) {
                 echo json_encode(array("message" => "Pessoa deletada com sucesso."));
@@ -107,7 +117,7 @@ switch ($method) {
                 echo json_encode(array("message" => "Falha ao deletar a pessoa."));
             }
         } else {
-            echo json_encode(array("message" => "ID da pessoa não informado."));
+            echo json_encode(array("message" => "ID da pessoa não informado no JSON."));
         }
         break;
 

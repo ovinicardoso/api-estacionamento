@@ -1,4 +1,6 @@
 <?php
+date_default_timezone_set('America/Sao_Paulo');
+
 class Movimentacao
 {
     private $conn;
@@ -37,6 +39,32 @@ class Movimentacao
         return $stmt;
     }
 
+    // Verificar se existe uma movimentação sem hora de saída para o cartão
+    public function existeMovimentacaoSemSaida() {
+        $query = "SELECT ID_Movimentacao FROM Movimentacao WHERE ID_Cartao = :id_cartao AND Hora_Saida IS NULL LIMIT 1";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id_cartao', $this->id_cartao);
+        $stmt->execute();
+
+        if ($stmt->rowCount() > 0) {
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            $this->id_movimentacao = $row['ID_Movimentacao']; // Armazena o ID da movimentação para atualização
+            return true;
+        }
+        return false;
+    }
+
+    // Atualizar a movimentação com a hora de saída
+    public function atualizarHoraSaida() {
+        $query = "UPDATE Movimentacao SET Hora_Saida = :hora_saida WHERE ID_Movimentacao = :id_movimentacao";
+        $stmt = $this->conn->prepare($query);
+
+        $stmt->bindParam(':hora_saida', $this->hora_saida);
+        $stmt->bindParam(':id_movimentacao', $this->id_movimentacao);
+
+        return $stmt->execute();
+    }
+
     // Método para ler uma movimentação específica
     public function read()
     {
@@ -68,6 +96,47 @@ class Movimentacao
         $stmt->bindParam(':id_vaga', $this->id_vaga);
 
         return $stmt->execute();
+    }
+
+    // Método para atualizar o status da vaga com base no sensor
+    public function atualizarStatusVaga($sensor_numero, $status_ocupado)
+    {
+        $query = "UPDATE Vaga SET Ocupado = :status_ocupado WHERE ID_Vaga = :sensor_numero";
+        $stmt = $this->conn->prepare($query);
+
+        $stmt->bindParam(':status_ocupado', $status_ocupado);
+        $stmt->bindParam(':sensor_numero', $sensor_numero);
+
+        if ($stmt->execute() && $status_ocupado == 1) {
+            // Se a vaga foi marcada como "ocupada", associar à primeira movimentação com hora de saída nula
+            return $this->associarVagaMovimentacao($sensor_numero);
+        }
+
+        return $stmt->execute();
+    }
+
+    // Método para associar a vaga à primeira movimentação com hora de saída nula
+    private function associarVagaMovimentacao($id_vaga)
+    {
+        // Buscar a primeira movimentação com hora de saída nula
+        $query = "SELECT ID_Movimentacao FROM Movimentacao WHERE Hora_Saida IS NULL AND ID_Vaga IS NULL ORDER BY Hora_Entrada ASC LIMIT 1";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+
+        if ($stmt->rowCount() > 0) {
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            $id_movimentacao = $row['ID_Movimentacao'];
+
+            // Associar a movimentação à vaga
+            $query_update = "UPDATE Movimentacao SET ID_Vaga = :id_vaga WHERE ID_Movimentacao = :id_movimentacao";
+            $stmt_update = $this->conn->prepare($query_update);
+            $stmt_update->bindParam(':id_vaga', $id_vaga);
+            $stmt_update->bindParam(':id_movimentacao', $id_movimentacao);
+
+            return $stmt_update->execute();
+        }
+
+        return false; // Retorna falso se não houver movimentação com hora de saída nula
     }
 
     // Método para atualizar uma movimentação

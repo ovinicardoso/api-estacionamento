@@ -67,6 +67,17 @@ class Cartao
         return $stmt;
     }
 
+    // Método para listar o cartão pelo NS_Cartao
+    public function listarPorNS() {
+    $query = "SELECT ID_Cartao, Nome_Cartao, NS_Cartao FROM " . $this->table_name . " WHERE NS_Cartao = :NS_Cartao LIMIT 1";
+    $stmt = $this->conn->prepare($query);
+
+    $stmt->bindParam(':NS_Cartao', $this->NS_Cartao);
+    $stmt->execute();
+
+    return $stmt;
+}
+
     // Atualizar um cartão
     public function atualizar()
     {

@@ -1,4 +1,6 @@
 <?php
+date_default_timezone_set('America/Sao_Paulo');
+
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
 
@@ -65,27 +67,62 @@ switch ($method) {
             }
 
         } elseif (!empty($data->NS_Cartao)) {
-
             // Define NS_Cartao e busca o último registro sem UID associado
             $cartao->NS_Cartao = $data->NS_Cartao;
 
-            $stmt = $cartao->buscarPorCartaoNulo();
-            if ($stmt) {
-                $row = $stmt->fetch(PDO::FETCH_ASSOC);
-                if ($row) {
-                    $cartao->ID_Cartao = $row['ID_Cartao'];
-                    $cartao->Nome_Cartao = $row['Nome_Cartao'];
+            if ($cartao->verificarCartao()) {
 
-                    if ($cartao->atualizar()) {
-                        echo json_encode(array("message" => "Cartão adicionado com sucesso."));
+                // Buscar o ID do cartão associado ao NS_Cartao
+                $stmt = $cartao->listarPorNS();
+                $cartao_data = $stmt->fetch(PDO::FETCH_ASSOC);
+                $id_cartao = $cartao_data['ID_Cartao'];
+
+                // Criar uma nova movimentação
+                $movimentacao = new Movimentacao($db);
+                $movimentacao->id_cartao = $id_cartao;
+
+                // Verifica se há uma movimentação sem hora de saída
+                if ($movimentacao->existeMovimentacaoSemSaida()) {
+                    // Atualizar a movimentação com a hora de saída
+                    $movimentacao->hora_saida = date("Y-m-d H:i:s");
+                    
+                    if ($movimentacao->atualizarHoraSaida()) {
+                        echo "1";
                     } else {
-                        echo json_encode(array("message" => "Erro ao atualizar o cartão no banco de dados."));
+                        echo json_encode(["message" => "Erro ao registrar a movimentação de saída."]);
                     }
                 } else {
-                echo json_encode(array("message" => "Nenhum nome de cartão pendente encontrado. Envie o nome primeiro."));
+                    // Criar uma nova movimentação de entrada
+                    $movimentacao->hora_entrada = date("Y-m-d H:i:s");
+                    $movimentacao->id_vaga = isset($data->ID_Vaga) ? $data->ID_Vaga : null; // ID da vaga, se disponível
+
+                    if ($movimentacao->create()) {
+                        echo "1";
+                    } else {
+                        echo json_encode(["message" => "Não foi possível criar a movimentação."]);
+                    }
                 }
+
             } else {
-            echo json_encode(array("message" => "Erro ao buscar cartão pendente no banco de dados."));
+
+                $stmt = $cartao->buscarPorCartaoNulo();
+                if ($stmt) {
+                    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                    if ($row) {
+                        $cartao->ID_Cartao = $row['ID_Cartao'];
+                        $cartao->Nome_Cartao = $row['Nome_Cartao'];
+
+                        if ($cartao->atualizar()) {
+                            echo "0";
+                        } else {
+                            echo json_encode(array("message" => "Erro ao atualizar o cartão no banco de dados."));
+                        }
+                    } else {
+                        echo "2";
+                    }
+                } else {
+                    echo json_encode(array("message" => "Erro ao buscar cartão pendente no banco de dados."));
+                }
             }
 
         } else {

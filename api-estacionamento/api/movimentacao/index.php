@@ -1,4 +1,6 @@
 <?php
+date_default_timezone_set('America/Sao_Paulo');
+
 header('Content-Type: application/json');
 header("Content-Type: application/json; charset=UTF-8");
 
@@ -44,6 +46,23 @@ switch ($method) {
     case 'POST':
         // Cria uma nova movimentação
         $data = json_decode(file_get_contents("php://input"));
+
+        if (isset($data->sensorNumero) && isset($data->status)) {
+            // Registrar ou atualizar o status da vaga com base no sensor
+            $sensor_numero = $data->sensorNumero;
+            $status_ocupado = ($data->status === "ativado") ? 0 : 1; // 0 para ocupado, 1 para livre
+    
+            if ($movimentacao->atualizarStatusVaga($sensor_numero, $status_ocupado)) {
+                $status_mensagem = $status_ocupado ? "ocupado" : "livre";
+                echo json_encode(["message" => "Status da vaga $sensor_numero atualizado para $status_mensagem."]);
+            } else {
+                echo json_encode(["message" => "Erro ao atualizar o status da vaga."]);
+            }
+        } else {
+            // Lógica para movimentação normal
+        }
+        break;
+
         $movimentacao->hora_entrada = $data->hora_entrada;
         $movimentacao->hora_saida = $data->hora_saida;
         $movimentacao->id_cartao = $data->id_cartao;
