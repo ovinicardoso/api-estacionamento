@@ -1,0 +1,55 @@
+Pinos 34, 35, 36 e 39 são input apenas.
+
+RFID-RC522:
+
+3.3v -> 3.3v
+RST -> D2
+GND -> GND
+IRQ -> NULL
+MISO -> D19
+MOSI -> D23
+SCK -> D18
+SDA -> D5
+
+====================================================
+
+Servo SG90:
+
+Cabo marrom -> GND
+Cabo vermelho -> VIN (5V)
+Cabo laranja -> D13
+
+===================================================
+
+Led:
+
+Pino maior -> GND
+
+===================================================
+
+Sensor infravermelho TCRT5000 (1):
+
+VCC -> VIN (5V)
+GND -> GND
+D0 -> D32
+A0 -> null
+
+==================================================
+
+Sensor infravermelho TCRT5000 (2):
+
+VCC -> VIN (5V)
+GND -> GND
+D0 -> D34
+A0 -> null
+
+==================================================
+
+Sensor infravermelho TCRT5000 (3):
+
+VCC -> VIN (5V)
+GND -> GND
+D0 -> D35
+A0 -> null
+
+==================================================
