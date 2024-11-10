@@ -1,4 +1,5 @@
 <?php
+date_default_timezone_set('America/Sao_Paulo');
 // URL da API
 $api_url = 'http://localhost/api-estacionamento/api/movimentacao/index.php'; // Ajuste para o seu domínio
 
@@ -83,24 +84,24 @@ $movimentacoes = getMovimentacoes($api_url);
                     const tabela = document.querySelector('table');
                     // Limpa as linhas existentes, exceto o cabeçalho
                     tabela.innerHTML = `
-                    <tr>
-                        <th>Hora de Entrada</th>
-                        <th>Hora de Saída</th>
-                        <th>Nome do Cartão</th>
-                        <th>Nome da Vaga</th> <!-- Alteração para "Nome da Vaga" -->
-                    </tr>
-                `;
+                        <tr>
+                            <th>Hora de Entrada</th>
+                            <th>Hora de Saída</th>
+                            <th>Nome do Cartão</th>
+                            <th>Nome da Vaga</th>
+                        </tr>
+                    `;
 
                     if (data.length > 0) {
                         data.forEach(movimentacao => {
-                            const row = tabela.insertRow();
+                            const row = tabela.insertRow(1); // Insere no índice 1, após o cabeçalho
                             row.insertCell(0).textContent = movimentacao.Hora_Entrada || 'N/A';
                             row.insertCell(1).textContent = movimentacao.Hora_Saida || 'N/A';
                             row.insertCell(2).textContent = movimentacao.Nome_Cartao || 'N/A';
-                            row.insertCell(3).textContent = movimentacao.Nome_Vaga || 'N/A'; // Alteração para "Nome_Vaga"
+                            row.insertCell(3).textContent = movimentacao.Nome_Vaga || 'N/A';
                         });
                     } else {
-                        const row = tabela.insertRow();
+                        const row = tabela.insertRow(1);
                         row.insertCell(0).colSpan = 4;
                         row.cells[0].textContent = 'Nenhuma movimentação encontrada.';
                     }
@@ -108,7 +109,7 @@ $movimentacoes = getMovimentacoes($api_url);
                 .catch(error => console.error('Erro ao acessar a API:', error));
         }
 
-        // Atualiza as movimentações a cada 5 segundos
+        // Atualiza as movimentações a cada 1 segundo
         setInterval(atualizarMovimentacoes, 1000);
     </script>
 
