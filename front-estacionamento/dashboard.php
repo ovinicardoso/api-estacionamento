@@ -1,7 +1,15 @@
 <?php
 date_default_timezone_set('America/Sao_Paulo');
-// URL da API
-$api_url = 'http://localhost/api-estacionamento/api/movimentacao/index.php'; // Ajuste para o seu domínio
+
+// Obtém as datas de filtro
+$start_date = isset($_GET['start_date']) ? $_GET['start_date'] : date('Y-m-d');
+$end_date = isset($_GET['end_date']) ? $_GET['end_date'] : date('Y-m-d');
+
+$start_date = date('Y-m-d', strtotime($start_date));
+$end_date = date('Y-m-d', strtotime($end_date));
+
+// URL da API com parâmetros de data
+$api_url = 'http://localhost/api-estacionamento/api/movimentacao/index.php?start_date=' . $start_date . '&end_date=' . $end_date;
 
 if (!function_exists('getMovimentacoes')) {
     function getMovimentacoes($url)
@@ -18,7 +26,6 @@ if (!function_exists('getMovimentacoes')) {
     }
 }
 
-// Obtendo as movimentações da API
 $movimentacoes = getMovimentacoes($api_url);
 ?>
 
@@ -49,14 +56,23 @@ $movimentacoes = getMovimentacoes($api_url);
         </div>
 
         <div class="content">
-            <h1>Dashboard</h1><br>
-            <h3>Movimentações</h3>
+            <h1>Dashboard</h1>
+            <h3>Movimentações</h3><br>
+
+            <form method="GET" action="dashboard.php">
+                <label for="start_date">Data Início:</label>
+                <input type="date" id="start_date" name="start_date" value="<?php echo $start_date; ?>" />
+                <label for="end_date">Data Fim:</label>
+                <input type="date" id="end_date" name="end_date" value="<?php echo $end_date; ?>" />
+                <button type="submit">Filtrar</button>
+            </form>
+
             <table>
                 <tr>
                     <th>Hora de Entrada</th>
                     <th>Hora de Saída</th>
                     <th>Nome do Cartão</th>
-                    <th>Nome da Vaga</th> <!-- Alteração para "Nome da Vaga" -->
+                    <th>Nome da Vaga</th>
                 </tr>
                 <?php if (!empty($movimentacoes)): ?>
                     <?php foreach ($movimentacoes as $movimentacao): ?>
@@ -64,7 +80,7 @@ $movimentacoes = getMovimentacoes($api_url);
                             <td><?php echo !empty($movimentacao['Hora_Entrada']) ? htmlspecialchars($movimentacao['Hora_Entrada']) : 'N/A'; ?></td>
                             <td><?php echo !empty($movimentacao['Hora_Saida']) ? htmlspecialchars($movimentacao['Hora_Saida']) : 'N/A'; ?></td>
                             <td><?php echo !empty($movimentacao['Nome_Cartao']) ? htmlspecialchars($movimentacao['Nome_Cartao']) : 'N/A'; ?></td>
-                            <td><?php echo !empty($movimentacao['Nome_Vaga']) ? htmlspecialchars($movimentacao['Nome_Vaga']) : 'N/A'; ?></td> <!-- Alteração aqui para "Nome_Vaga" -->
+                            <td><?php echo !empty($movimentacao['Nome_Vaga']) ? htmlspecialchars($movimentacao['Nome_Vaga']) : 'N/A'; ?></td>
                         </tr>
                     <?php endforeach; ?>
                 <?php else: ?>
@@ -82,7 +98,6 @@ $movimentacoes = getMovimentacoes($api_url);
                 .then(response => response.json())
                 .then(data => {
                     const tabela = document.querySelector('table');
-                    // Limpa as linhas existentes, exceto o cabeçalho
                     tabela.innerHTML = `
                         <tr>
                             <th>Hora de Entrada</th>
@@ -94,7 +109,7 @@ $movimentacoes = getMovimentacoes($api_url);
 
                     if (data.length > 0) {
                         data.forEach(movimentacao => {
-                            const row = tabela.insertRow(1); // Insere no índice 1, após o cabeçalho
+                            const row = tabela.insertRow(1);
                             row.insertCell(0).textContent = movimentacao.Hora_Entrada || 'N/A';
                             row.insertCell(1).textContent = movimentacao.Hora_Saida || 'N/A';
                             row.insertCell(2).textContent = movimentacao.Nome_Cartao || 'N/A';
@@ -109,7 +124,6 @@ $movimentacoes = getMovimentacoes($api_url);
                 .catch(error => console.error('Erro ao acessar a API:', error));
         }
 
-        // Atualiza as movimentações a cada 1 segundo
         setInterval(atualizarMovimentacoes, 1000);
     </script>
 
