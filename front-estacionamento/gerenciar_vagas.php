@@ -1,4 +1,13 @@
 <?php
+session_start();
+
+// Verifica se o usuário está autenticado (se a sessão existe)
+if (!isset($_SESSION['usuario_id'])) {
+    // Se não estiver autenticado, redireciona para a página de login
+    header("Location: login.php");
+    exit();
+}
+
 // URL da API
 $api_url = 'http://localhost/api-estacionamento/api/vagas/index.php';
 
