@@ -126,7 +126,8 @@ Este projeto não possui uma licença definida.
 - Enrico Tondato - Desenvolvedor do Front-End
 - Izaque Nogueira - Desenvolvedor do Sistema Arduino
 - Vinicius Cardoso - Desenvolvedor da API
-*Alunos do 4º semestre de ADS da Fatec Cruzeiro 2024*
+  
+  *Alunos do 4º semestre de ADS da Fatec Cruzeiro 2024*
 
 ## Referências
 
