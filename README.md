@@ -24,7 +24,7 @@ O projeto foi desenvolvido com a ideia de facilitar a administração de vagas d
 5. **Navegue até a pasta 'front-estacionamento' e abra o arquivo 'index.php' em seu navegador**
 6. **Abra o código do Arduino na IDE do Arduino e envie o código para o dispositivo**
 
-### Endpoints - Cartão
+## Endpoints - Cartão
 
 1. **GET `/api/cartao`**
    - Retorna todos os cartões cadastrados.
@@ -47,7 +47,7 @@ O projeto foi desenvolvido com a ideia de facilitar a administração de vagas d
 
 ---
 
-### Endpoints - Movimentação
+## Endpoints - Movimentação
 
 1. **GET `/api/movimentacao`**
    - Retorna todas as movimentações com informações de cartões e vagas.
@@ -70,7 +70,7 @@ O projeto foi desenvolvido com a ideia de facilitar a administração de vagas d
 
 ---
 
-### Endpoints - Pessoa
+## Endpoints - Pessoa
 
 1. **GET `/api/pessoa`**
    - Retorna todas as pessoas cadastradas.
@@ -89,7 +89,7 @@ O projeto foi desenvolvido com a ideia de facilitar a administração de vagas d
 
 ---
 
-### Endpoints - Vaga
+## Endpoints - Vaga
 
 1. **GET `/api/vaga`**
    - Retorna todas as vagas cadastradas.
